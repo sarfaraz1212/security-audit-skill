@@ -131,6 +131,7 @@ For `confirmed`, require it to check:
 4. Affected principal/resource and demonstrated impact.
 5. Severity separation: realistic likelihood, demonstrated impact, overall no greater than impact.
 6. Remediation strategy and any `code_changes`, including whether the fix enforces the invariant without merely moving trust.
+7. Legitimate users of every path the fix refuses: the product's documented flows, client libraries, plugins, published integrations, and advertised anonymous modes. Each one appears in `remediation.preserved_uses` with how it keeps working, or the strategy states that the fix removes that capability and leaves the design change to the owner.
 
 For `needs_validation`, require it to check:
 
@@ -159,7 +160,7 @@ Write:
 1. Run profile, scope, budget (if set) with agents spent versus planned, source ref, sandboxed source-and-local-only execution statement, prior-run use, and explicit deferred and out-of-scope coverage. Name carried same-source confirmations and changed-source revalidations. A `quick`, scoped, budget-limited, or incomplete run states plainly that it is a partial pass. If candidate validation exhausted a strict budget, state that the run is incomplete and list every unvalidated fingerprint and linked unit; do not describe those candidates as findings. If the budget prevented a mandatory critic, state which critic did not run and make no clean-coverage claim.
 2. One short security posture summary.
 3. A confirmed-findings table: severity, title, affected boundary, and one-line observed result.
-4. Each confirmed finding: repository source location, lower-trust principal, target-native bounded reproduction, conditions, actual result, impact, priority rationale, and smallest source fix.
+4. Each confirmed finding: repository source location, lower-trust principal, target-native bounded reproduction, conditions, actual result, impact, priority rationale, smallest source fix, and the legitimate uses it preserves or the capability it removes.
 5. A separate `NEEDS VALIDATION` table. Give each lead's title, repository trace, exact blocker, bounded local next step, and safe owner-observed deployment check. Do not assign severity or call it a confirmed vulnerability.
 6. Separate hardening notes and positive source patterns.
 7. Coverage summary from the ledger: covered, candidate, blocked, and deferred counts, plus important exclusions and the final critic result.
@@ -175,7 +176,9 @@ For each confirmed `medium`, `high`, or `critical` record, copy the complete sou
 - native input, invocation, or fixture and exact bounded instructions;
 - observed output and the security invariant it proves;
 - conditions and containment;
-- source-level remediation and regression case.
+- source-level remediation and a two-part regression case:
+  - **the attack is refused** — fails against the unfixed code and passes after the fix;
+  - **each named legitimate use still works** — one case per `preserved_uses` entry that passes against both the unfixed and the fixed code. A case that passes only before the fix shows a lost capability, not a preserved one.
 
 #### `NEEDS-VALIDATION.md`
 
